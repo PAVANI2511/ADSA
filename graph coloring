@@ -1,0 +1,40 @@
+def is_safe(v, color, c, graph):
+    for i in range(len(graph)):
+        if graph[v][i] == 1 and color[i] == c:
+            return False
+    return True
+
+def graph_coloring_util(graph, m, color, v):
+    if v == len(graph):
+        return True
+    for c in range(1, m + 1):
+        if is_safe(v, color, c, graph):
+            color[v] = c
+            if graph_coloring_util(graph, m, color, v + 1):
+                return True
+            color[v] = 0
+    return False
+
+def graph_coloring(graph, m):
+    color = [0] * len(graph)
+    if not graph_coloring_util(graph, m, color, 0):
+        return False, []
+    return True, color
+
+n = int(input("Enter the number of vertices: "))
+graph = []
+print("Enter the adjacency matrix (row by row):")
+for i in range(n):
+    row = list(map(int, input(f"Row {i+1}: ").split()))
+    graph.append(row)
+
+m = n
+success, colors = graph_coloring(graph, m)
+
+if success:
+    print("\nMinimum colors needed:", max(colors))
+    print("Assigned colors:")
+    for i in range(n):
+        print(f"Vertex {i+1} ---> Color {colors[i]}")
+else:
+    print("Solution does not exist.")
