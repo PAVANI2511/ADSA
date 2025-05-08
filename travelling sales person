@@ -1,0 +1,51 @@
+import sys
+
+def tsp(graph):
+    n = len(graph)
+    dp = [[float('inf')] * n for _ in range(1 << n)]
+    parent = [[-1] * n for _ in range(1 << n)]
+    dp[1][0] = 0
+
+    for mask in range(1 << n):
+        for u in range(n):
+            if mask & (1 << u):
+                for v in range(n):
+                    if not mask & (1 << v):
+                        new_cost = dp[mask][u] + graph[u][v]
+                        if new_cost < dp[mask | (1 << v)][v]:
+                            dp[mask | (1 << v)][v] = new_cost
+                            parent[mask | (1 << v)][v] = u
+
+    min_cost = float('inf')
+    last_city = -1
+    final_mask = (1 << n) - 1
+    for u in range(1, n):
+        cost = dp[final_mask][u] + graph[u][0]
+        if cost < min_cost:
+            min_cost = cost
+            last_city = u
+
+    path = []
+    mask = final_mask
+    curr_city = last_city
+    while curr_city != -1:
+        path.append(curr_city)
+        next_city = parent[mask][curr_city]
+        mask = mask ^ (1 << curr_city)
+        curr_city = next_city
+
+    path.append(0)
+    path.reverse()
+
+    return min_cost, path
+
+n = int(input("Enter number of cities: "))
+graph = []
+print("Enter distance matrix:")
+for i in range(n):
+    row = list(map(int, input(f"Row {i+1}: ").split()))
+    graph.append(row)
+
+cost, path = tsp(graph)
+print("\nMinimum cost to complete TSP:", cost)
+print("Optimal Path:", " -> ".join(map(str, path)))
