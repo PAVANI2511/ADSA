@@ -1,0 +1,42 @@
+class Item:
+    def __init__(self, profit, weight, index):
+        self.profit = profit
+        self.weight = weight
+        self.index = index
+        self.ratio = profit / weight
+def knapsack_fractional(capacity, items):
+    items.sort(key=lambda item: item.ratio, reverse=True)
+    total_profit = 0
+    total_weight = 0
+    knapsack_items = []
+    solution_vector = [0] * len(items)
+    for i, item in enumerate(items):
+        if total_weight + item.weight <= capacity:
+            knapsack_items.append(item)
+            total_profit += item.profit
+            total_weight += item.weight
+            solution_vector[item.index] = 1
+        else:
+            remaining_capacity = capacity - total_weight
+            total_profit += item.profit * (remaining_capacity / item.weight)
+            total_weight += remaining_capacity
+            solution_vector[item.index] = remaining_capacity / item.weight
+            break
+    return total_profit, total_weight, knapsack_items, solution_vector
+def main():
+    n = int(input("Enter the number of items (n): "))
+    items = []
+    for i in range(n):
+        profit = int(input(f"Enter profit of item {i+1}: "))
+        weight = int(input(f"Enter weight of item {i+1}: "))
+        items.append(Item(profit, weight, i))
+    m = int(input("Enter the capacity of the knapsack (m): "))
+    total_profit, total_weight, knapsack_items, solution_vector = knapsack_fractional(m, items)
+    print("\nSelected items:")
+    for item in knapsack_items:
+        print(f"Profit: {item.profit}, Weight: {item.weight}, Profit/Weight Ratio: {item.ratio:.2f}")
+    print(f"\nTotal profit: {total_profit}")
+    print(f"Total weight: {total_weight}")
+    print(f"Solution vector: {solution_vector}")
+if __name__ == "__main__":
+    main()
