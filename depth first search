@@ -1,0 +1,22 @@
+from collections import defaultdict
+g=defaultdict(list)
+def add_e(v1,v2):
+    g[v1].append(v2)
+    g[v2].append(v1)
+def dfs(node,visited,g):
+    if node not in g:
+        print("node is not in graph")
+        return
+    if node not in visited:
+        print(node)
+        visited.add(node)
+        for i in g[node]:
+            dfs(i,visited,g)
+visited=set()
+n=int(input("enter no of nodes"))
+for i in range(n):
+    a=int(input("enter node values:"))
+    b=int(input("enter adjacent node values:"))
+    add_e(a,b)
+m=int(input("enter starting node:"))
+dfs(m,visited,g)
