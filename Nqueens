@@ -1,0 +1,23 @@
+def is_safe(board, row, col, n):
+    for i in range(col):
+        if board[i] == row or abs(board[i] - row) == abs(i - col):
+            return False
+    return True
+
+def solve_n_queens(col, board, n, solutions):
+    if col == n:
+        solutions.append([row + 1 for row in board])
+        return
+    for row in range(n):
+        if is_safe(board, row, col, n):
+            board[col] = row
+            solve_n_queens(col + 1, board, n, solutions)
+
+n = int(input("Enter the number of queens (n): "))
+board = [-1] * n
+solutions = []
+solve_n_queens(0, board, n, solutions)
+
+print(f"Solutions for {n}-Queens problem:")
+for sol in solutions:
+    print(sol)
