@@ -1,0 +1,110 @@
+class Node:
+    def __init__(self, key):
+        self.left = None
+        self.right = None
+        self.value = key
+
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+    
+    def insert(self, root, key):
+        if root is None:
+            return Node(key)
+        else:
+            if key < root.value:
+                root.left = self.insert(root.left, key)
+            else:
+                root.right = self.insert(root.right, key)
+        return root
+    
+    def insert_value(self, key):
+        self.root = self.insert(self.root, key)
+    
+    def search(self, root, key):
+        if root is None or root.value == key:
+            return root
+        if key > root.value:
+            return self.search(root.right, key)
+        return self.search(root.left, key)
+    
+    def search_value(self, key):
+        result = self.search(self.root, key)
+        if result:
+            print(f"Value {key} found in the tree.")
+        else:
+            print(f"Value {key} not found in the tree.")
+    
+    def min_value_node(self, node):
+        current = node
+        while current.left is not None:
+            current = current.left
+        return current
+    
+    def delete(self, root, key):
+        if root is None:
+            return root
+        
+        if key < root.value:
+            root.left = self.delete(root.left, key)
+        elif key > root.value:
+            root.right = self.delete(root.right, key)
+        else:
+            if root.left is None:
+                temp = root.right
+                root = None
+                return temp
+            elif root.right is None:
+                temp = root.left
+                root = None
+                return temp
+            temp = self.min_value_node(root.right)
+            root.value = temp.value
+            root.right = self.delete(root.right, temp.value)
+        
+        return root
+    
+    def delete_value(self, key):
+        self.root = self.delete(self.root, key)
+
+def get_elements_from_user(num_elements):
+    elements = []
+    print(f"Please enter {num_elements} elements:")
+    for _ in range(num_elements):
+        while True:
+            try:
+                element = int(input("Enter an element: "))
+                elements.append(element)
+                break
+            except ValueError:
+                print("Invalid input. Please enter an integer.")
+    return elements
+
+def main():
+    bst = BinarySearchTree()
+    num_elements = int(input("How many elements would you like to insert into the tree? (Max 100):"))
+    elements = get_elements_from_user(num_elements)
+    
+    for element in elements:
+        bst.insert_value(element)
+    
+    while True:
+        print("\nOptions:")
+        print("1. Search for a value")
+        print("2. Delete a value")
+        print("3. Exit")
+        option = int(input("Choose an option (1/2/3): "))
+        
+        if option == 1:
+            value = int(input("Enter value to search: "))
+            bst.search_value(value)
+        elif option == 2:
+            value = int(input("Enter value to delete: "))
+            bst.delete_value(value)
+        elif option == 3:
+            break
+        else:
+            print("Invalid option, please try again.")
+
+if __name__ == "__main__":
+    main()
