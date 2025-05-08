@@ -1,0 +1,23 @@
+def bellman_ford(vertices, edges, source):
+    dist = [float('inf')] * vertices
+    dist[source] = 0
+    for i in range(vertices - 1):
+        for u, v, w in edges:
+            if dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+    return dist
+
+V = int(input("Enter number of vertices: "))
+E = int(input("Enter number of edges: "))
+edges = []
+print("Enter each edge in format: source destination weight (0-based index)")
+for _ in range(E):
+    u, v, w = map(int, input().split())
+    edges.append((u, v, w))
+
+src = int(input(f"Enter source vertex (0 to {V-1}): "))
+distances = bellman_ford(V, edges, src)
+
+print("\nFinal shortest distances from source:")
+for i in range(V):
+    print(f"Vertex {i}: {distances[i]}")
