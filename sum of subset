@@ -1,0 +1,24 @@
+def sum_of_subsets(s,k,r,w,x,m,n):
+    x[k]=1
+    if s+w[k]==m:
+        print("subset:",[w[i] for i in range(k+1) if x[i]==1])
+        print("solution vector:",x)
+    elif(s+w[k]+w[k+1]<=m):
+        sum_of_subsets(s+w[k],k+1,r-w[k],w,x,m,n)
+    if (s+r-w[k]>=m and s+w[k+1]<=m):
+        x[k]=0
+        sum_of_subsets(s,k+1,r-w[k],w,x,m,n)
+def main():
+    n=int(input("enter number of elements:"))
+    w=list(map(int,input("enter elements(space seperated):").split()))
+    m=int(input("enter target sum:"))
+    w.sort()
+    total=sum(w)
+    x=[0]*n
+    print("subsets that sum to",m,":")
+    if w[0]<=m and total>=m:
+        sum_of_subsets(0,0, total,w,x,m,n-1)
+    else:
+        print("no solution")
+if __name__=="__main__":
+    main()
