@@ -1,0 +1,140 @@
+class AVLNode:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+        self.height = 1
+class AVLTree:
+    def __init__(self):
+        self.root = None
+    def _get_height(self, node):
+        if not node:
+            return 0
+        return node.height
+    def _get_balance(self, node):
+        if not node:
+            return 0
+        return self._get_height(node.left) - self._get_height(node.right)
+    def _rotate_right(self, y):
+        x = y.left
+        T2 = x.right
+        x.right = y
+        y.left = T2
+        y.height = max(self._get_height(y.left), self._get_height(y.right)) + 1
+        x.height = max(self._get_height(x.left), self._get_height(x.right)) + 1
+        return x
+    def _rotate_left(self, x):
+        y = x.right
+        T2 = y.left
+        y.left = x
+        x.right = T2
+        x.height = max(self._get_height(x.left), self._get_height(x.right)) + 1
+        y.height = max(self._get_height(y.left), self._get_height(y.right)) + 1
+        return y
+    def _insert(self, node, key):
+        if not node:
+            return AVLNode(key)
+        if key < node.key:
+            node.left = self._insert(node.left, key)
+        else:
+            node.right = self._insert(node.right, key)
+        node.height = max(self._get_height(node.left), self._get_height(node.right)) + 1
+        balance = self._get_balance(node)
+        if balance > 1 and key < node.left.key:
+            return self._rotate_right(node)
+        if balance < -1 and key > node.right.key:
+            return self._rotate_left(node)
+        if balance > 1 and key > node.left.key:
+            node.left = self._rotate_left(node.left)
+            return self._rotate_right(node)
+        if balance < -1 and key < node.right.key:
+            node.right = self._rotate_right(node.right)
+            return self._rotate_left(node)
+        return node
+    def insert(self, key):
+        self.root = self._insert(self.root, key)
+    def _min_value_node(self, node):
+        current = node
+        while current.left:
+            current = current.left
+        return current
+    def _delete(self, node, key):
+        if not node:
+            return node
+        if key < node.key:
+            node.left = self._delete(node.left, key)
+        elif key > node.key:
+            node.right = self._delete(node.right, key)
+        else:
+            if not node.left:
+                return node.right
+            elif not node.right:
+                return node.left
+            temp = self._min_value_node(node.right)
+            node.key = temp.key
+            node.right = self._delete(node.right, temp.key)
+        node.height = max(self._get_height(node.left), self._get_height(node.right)) + 1
+        balance = self._get_balance(node)
+        if balance > 1 and self._get_balance(node.left) >= 0:
+            return self._rotate_right(node)
+        if balance < -1 and self._get_balance(node.right) <= 0:
+            return self._rotate_left(node)
+        if balance > 1 and self._get_balance(node.left) < 0:
+            node.left = self._rotate_left(node.left)
+            return self._rotate_right(node)
+        if balance < -1 and self._get_balance(node.right) > 0:
+            node.right = self._rotate_right(node.right)
+            return self._rotate_left(node)
+        return node
+    def delete(self, key):
+        self.root = self._delete(self.root, key)
+    def _inorder_traversal(self, node, result):
+        if node:
+            self._inorder_traversal(node.left, result)
+            result.append(node.key)
+            self._inorder_traversal(node.right, result)
+    def inorder(self):
+        result = []
+        self._inorder_traversal(self.root, result)
+        return result
+def read_elements_from_file(filename):
+    with open(filename, 'r') as f:
+        elements = [int(item.strip()) for line in f.readlines() for item in line.split() if item.strip()]
+    return elements
+def write_elements_to_file(filename, elements):
+    with open(filename, 'w') as f:
+        for elem in elements:
+            f.write(f"{elem}\n")
+def main():
+    input_file = 'input.txt'
+    output_file = 'output.txt'
+    elements = read_elements_from_file(input_file)
+    tree = AVLTree()
+    for element in elements:
+        tree.insert(element)
+    print(f"Inorder traversal after initial insertions: {tree.inorder()}")
+    while True:
+        print("\nChoose operation:")
+        print("1. Insert a value")
+        print("2. Delete a value")
+        print("3. Exit")
+        choice = input("Enter your choice (1/2/3): ").strip()
+        if choice == '1':  
+            value = int(input("Enter value to insert: ").strip())
+            tree.insert(value)
+            inorder_elements = tree.inorder()
+            print(f"Inorder traversal after insertion: {inorder_elements}")
+            write_elements_to_file(output_file, inorder_elements)
+        elif choice == '2': 
+            value = int(input("Enter value to delete: ").strip())
+            tree.delete(value)
+            inorder_elements = tree.inorder()
+            print(f"Inorder traversal after deletion: {inorder_elements}")
+            write_elements_to_file(output_file, inorder_elements)
+        elif choice == '3':  
+            print("Exiting program...")
+            break
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+if __name__ == "__main__":
+    main()
