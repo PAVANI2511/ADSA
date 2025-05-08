@@ -1,0 +1,77 @@
+class Node:
+    def __init__(self, key):
+        self.left = None
+        self.right = None
+        self.value = key
+class BST:
+    def __init__(self):
+        self.root = None
+    def insert(self, key):
+        """Inserts a new key into the BST."""
+        if self.root is None:
+            self.root = Node(key)
+        else:
+            self._insert(self.root, key)
+    def _insert(self, node, key):
+        """Helper function to insert a key into the BST."""
+        if key < node.value:
+            if node.left is None:
+                node.left = Node(key)
+            else:
+                self._insert(node.left, key)
+        else:
+            if node.right is None:
+                node.right = Node(key)
+            else:
+                self._insert(node.right, key)
+    def delete(self, key):
+        """Deletes a key from the BST."""
+        self.root = self._delete(self.root, key)
+    def _delete(self, node, key):
+        """Helper function for deleting a node."""
+        if node is None:
+            return node
+        if key < node.value:
+            node.left = self._delete(node.left, key)
+        elif key > node.value:
+            node.right = self._delete(node.right, key)
+        else:
+            # Node to be deleted is found
+            if node.left is None:
+                return node.right
+            elif node.right is None:
+                return node.left
+            # Node has two children
+            min_larger_node = self._min(node.right)
+            node.value = min_larger_node.value
+            node.right = self._delete(node.right, min_larger_node.value)
+        return node
+    def _min(self, node):
+        """Helper function to find the minimum value node."""
+        current = node
+        while current.left is not None:
+            current = current.left
+        return current
+
+    def inorder(self):
+        """Traverses the BST in Inorder and returns the result."""
+        return self._inorder(self.root)
+
+    def _inorder(self, node):
+        """Helper function for inorder traversal."""
+        if node is None:
+            return []
+        return self._inorder(node.left) + [node.value] + self._inorder(node.right)
+bst = BST()
+bst.insert(50)
+bst.insert(30)
+bst.insert(20)
+bst.insert(40)
+bst.insert(70)
+bst.insert(60)
+bst.insert(80)
+print("Inorder Traversal:", bst.inorder()) 
+bst.delete(20)
+print("Inorder Traversal after deleting 20:", bst.inorder())
+bst.delete(30)
+print("Inorder Traversal after deleting 30:", bst.inorder())  
